@@ -6,8 +6,8 @@ module Let_and_match = struct
     match tilde, stack with
     | false, false -> [%expr [%e e] [%e f]]
     | true, false -> [%expr [%e e] ~f:[%e f]]
-    | false, true -> [%expr [%e e] [%e f] [@nontail]]
-    | true, true -> [%expr [%e e] ~f:[%e f] [@nontail]]
+    | false, true -> [%expr [%e e] (stack_ [%e f]) [@nontail]]
+    | true, true -> [%expr [%e e] ~f:(stack_ [%e f]) [@nontail]]
   ;;
 
   module Expand = struct

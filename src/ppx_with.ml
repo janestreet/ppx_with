@@ -78,9 +78,13 @@ module Let_and_match = struct
       Ast_pattern.(single_expr_payload __)
       (fun ~loc ~path:_ expr ->
         match Ppxlib_jane.Shim.Expression_desc.of_parsetree expr.pexp_desc ~loc with
-        | Pexp_let (Nonrecursive, bindings, expr) ->
+        | Pexp_let (Immutable, Nonrecursive, bindings, expr) ->
           Expand.let_ ~loc ~bindings ~rest:expr ~tilde ~stack
         | Pexp_match (expr, cases) -> Expand.match_ ~loc ~expr ~cases ~tilde ~stack
+        | Pexp_let (_, Recursive, _, _) ->
+          Location.raise_errorf ~loc "[ppx_with] is not supported with [let rec]"
+        | Pexp_let (Mutable, _, _, _) ->
+          Location.raise_errorf ~loc "[ppx_with] is not supported with [let mutable]"
         | _ ->
           Location.raise_errorf
             ~loc
